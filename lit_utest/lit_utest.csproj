@@ -36,6 +36,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -50,7 +53,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Parser\LogParserRule.cs" />
+    <Compile Include="Parser\MockedTail.cs" />
+    <Compile Include="Parser\Parser.cs" />
+    <Compile Include="Parser\Rule.cs" />
     <Compile Include="Tail\FileWatchingTests.cs" />
     <Compile Include="Tail\MockedFile.cs" />
     <Compile Include="Tail\MockedFileStream.cs" />

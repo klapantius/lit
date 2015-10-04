@@ -2,11 +2,12 @@
 
 namespace lit
 {
-    interface ILogParserRule
+    interface IRule
     {
-        string Rule { get; }
-
+        string Pattern { get; }
+        bool IsValid { get; }
         bool IsMatching(string line);
+        string ErrorMessage { get; }
         IDictionary<string, string> Parse(string line);
     }
 }

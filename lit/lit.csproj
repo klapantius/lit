@@ -57,8 +57,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ILogParserRule.cs" />
-    <Compile Include="LogParserRule.cs" />
+    <Compile Include="IParser.cs" />
+    <Compile Include="IRule.cs" />
+    <Compile Include="Parser.cs" />
+    <Compile Include="Rule.cs" />
     <Compile Include="Tail\FileReader.cs" />
     <Compile Include="Tail\IFileReader.cs" />
     <Compile Include="Tail\IFileStream.cs" />
