@@ -44,13 +44,10 @@ namespace lit
         public string Pattern { get; set; }
 
         [XmlIgnore]
-        public bool IsValid { get { return isValid; } set { isValid = value; } }
-        [NonSerialized]
-        private bool isValid;
+        public bool IsValid { get; private set; }
 
-        [NonSerialized]
-        private string errorMessage;
-        public string ErrorMessage { get { return errorMessage; } set { } }
+        [XmlIgnore]
+        public string ErrorMessage { get; private set; }
 
         public bool IsMatching(string line)
         {

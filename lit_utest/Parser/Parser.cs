@@ -35,6 +35,27 @@ namespace lit_utest.ParserTests
                     )));
 
         [TestMethod]
+        public void t()
+        {
+            var c = new Parser.Configuration()
+            {
+                Rules = new List<Rule>()
+                {
+                    new Rule("foo") {Name = "r1"},
+                    new Rule("bar") {Name = "r2"},
+                }
+            };
+            var xd = new XDocument();
+            using (var writer = xd.CreateWriter())
+            {
+                // write xml into the writer
+                var serializer = new XmlSerializer(c.GetType());
+                serializer.Serialize(writer, c);
+            }
+            Console.WriteLine(xd.ToString());
+        }
+
+        [TestMethod]
         public void ParserCanLoadRules()
         {
             var testObject = new Parser(null);
