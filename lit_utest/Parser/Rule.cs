@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 using lit;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -81,6 +83,19 @@ namespace lit_utest.ParserTests
             {
                 Assert.Fail("Parse() must not throw exception. {0} caught.", ex.GetType().Name);
             }
+        }
+
+        [TestMethod]
+        public void KeyIsDateTimeIfThereIsNoGroupNameInRegex()
+        {
+            IRule testObject = new Rule(@"\d+");
+            var result = testObject.Parse("foo 1234 bar");
+            Assert.AreEqual(1, result.Count, "Unexpected count of results.");
+            Assert.AreEqual("1234", result[result.Keys.First()], "Unexpected result.");
+            StringAssert.StartsWith(result.Keys.First(), DateTime.Now.ToString(Rule.DefaultKeyFormat.Substring(0, 10)),
+                "Unexpected key value.");
+            Assert.IsTrue(new Regex(@"20\d\d[0,1]\d[0,1,2,3]\d[0,1,2]\d+").IsMatch(result.Keys.First()),
+                string.Format("Generated key doesn't look like a date/time string: {0}", result.Keys.First()));
         }
 
     }
