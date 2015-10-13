@@ -57,10 +57,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IParser.cs" />
-    <Compile Include="IRule.cs" />
-    <Compile Include="Parser.cs" />
-    <Compile Include="Rule.cs" />
+    <Compile Include="Parser\IParser.cs" />
+    <Compile Include="Parser\IRule.cs" />
+    <Compile Include="Parser\Parser.cs" />
+    <Compile Include="Parser\Rule.cs" />
     <Compile Include="Tail\FileReader.cs" />
     <Compile Include="Tail\IFileReader.cs" />
     <Compile Include="Tail\IFileStream.cs" />
