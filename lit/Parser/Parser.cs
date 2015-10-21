@@ -2,39 +2,28 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
-using System.Xml.Serialization;
 
 namespace lit
 {
     public class Parser : IParser
     {
-        [Serializable, XmlRoot("Configuration")]
-        public struct ConfigurationData
-        {
-            [XmlArray("Rules")]
-            [XmlArrayItem(typeof(Rule), ElementName = "Rule")]
-            public List<Rule> Rules;
-        }
-
-        public ConfigurationData Configuration;
+        internal readonly List<IRule> rules;
         private readonly ITail tail;
         private readonly ConcurrentDictionary<string, string> record = new ConcurrentDictionary<string, string>();
-        //private bool init = true;
 
-        internal Parser(ITail logTail)
+        internal Parser(ITail logTail, IConfiguration configuration)
         {
             tail = logTail;
-        }
-
-        public void LoadRules(XDocument rulesDocument)
-        {
-            var serializer = new XmlSerializer(typeof(ConfigurationData));
-            Configuration = (ConfigurationData)serializer.Deserialize(rulesDocument.Root.CreateReader());
+            rules = new List<IRule>();
+            if (configuration != null)
+            {
+                rules = configuration.Rules;
+            }
         }
 
         public void Run()
         {
+            if (null == tail) return;
             tail.Changed += TailUpdateHandler;
             tail.Watch();
         }
@@ -62,21 +51,21 @@ namespace lit
                 IRule matching;
                 try
                 {
-                    matching = Configuration.Rules.SingleOrDefault(r => r.IsMatching(line));
+                    matching = rules.SingleOrDefault(r => r.IsMatching(line));
                 }
                 catch (InvalidOperationException exception)
                 {
                     if (exception.Message.Contains("more than one"))
                     {
-                        var rules = Configuration.Rules.Where(r => r.IsMatching(line)).Select(r => string.IsNullOrEmpty(r.Name) ? r.Pattern : r.Name);
+                        var conflictingRules = rules.Where(r => r.IsMatching(line)).Select(r => string.IsNullOrEmpty(r.Name) ? r.Pattern : r.Name);
                         Console.WriteLine("Rule conflict!!! These rules: {0}{1}{0}are all matching to this line:{0}{2}",
-                            Environment.NewLine, string.Join(Environment.NewLine, rules), line);
+                            Environment.NewLine, string.Join(Environment.NewLine, conflictingRules), line);
                     }
                     else
                     {
                         Console.WriteLine("{0} caught (\"{1}\") while tryint to parser line: \"{2}\"", exception.GetType().Name, exception.Message, line);
                     }
-                    matching = Configuration.Rules.FirstOrDefault(r => r.IsMatching(line));
+                    matching = rules.FirstOrDefault(r => r.IsMatching(line));
                 }
                 if (null == matching) continue;
                 var lineFields = matching.Parse(line);
@@ -106,11 +95,6 @@ namespace lit
             {
                 OnChanged(record);
             }
-            //if (init)
-            //{
-            //    init = false;
-            //    if (null != result) OnChanged(result);
-            //}
         }
 
 

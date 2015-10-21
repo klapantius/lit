@@ -2,7 +2,7 @@
 
 namespace lit
 {
-    interface IRule
+    public interface IRule
     {
         string Name { get; }
         string Pattern { get; }

@@ -8,7 +8,6 @@ namespace lit
 
     interface IParser : IDisposable
     {
-        void LoadRules(XDocument rulesDocument);
         void Run();
         void Stop();
 

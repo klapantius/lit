@@ -1,4 +1,5 @@
-﻿using lit;
+﻿using System.Text;
+using lit;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Concurrent;
@@ -12,92 +13,83 @@ namespace lit_utest.ParserTests
     [TestClass]
     public class ParserTests
     {
-        private static readonly XDocument SimpleRuleSet = new XDocument(
-            new XElement("Configuration",
-                new XElement("Rules",
-                    new XElement("Rule",
-                        new XAttribute("name", "firstrule"),
-                        new XAttribute("pattern", "foo")),
-                    new XElement("Rule",
-                        new XAttribute("name", "secondrule"),
-                        new XAttribute("pattern", "bar.*"))
-            )));
-
-        private static readonly XDocument BlackHoleRuleSet = new XDocument(
-            new XElement("Configuration",
-                new XElement("Rules",
-                    new XElement("Rule",
-                        new XAttribute("name", "blackhole"),
-                        new XAttribute("pattern", ".*"))
-                    )));
-
-        private static readonly XDocument NamedGroupsRuleSet = new XDocument(
-            new XElement("Configuration",
-                new XElement("Rules",
-                    new XElement("Rule",
-                        new XAttribute("name", "firstrule"),
-                        new XAttribute("pattern", @"foo_(?<foo>\d+)")),
-                    new XElement("Rule",
-                        new XAttribute("name", "secondrule"),
-                        new XAttribute("pattern", @"bar_(?<bar>\d+)"),
-                        new XAttribute("actiononly", "false"))
-            )));
-
-        private static readonly XDocument FieldCleanerRuleSet = new XDocument(
-            new XElement("Configuration",
-                new XElement("Rules",
-                    new XElement("Rule",
-                        new XAttribute("name", "firstrule"),
-                        new XAttribute("pattern", @"foo_(?<foo>\d+)")),
-                    new XElement("Rule",
-                        new XAttribute("name", "secondrule"),
-                        new XAttribute("pattern", @"bar_(?<bar>\d+)")),
-                    new XElement("Rule",
-                        new XAttribute("name", "thirdrule"),
-                        new XAttribute("pattern", @"xyz_(?<xyz>\d+)")),
-                    new XElement("Rule",
-                        new XAttribute("name", "cleanerrule"),
-                        new XAttribute("pattern", @"mr.proper"),
-                        new XAttribute("clean", "foo,xyz"),
-                        new XAttribute("actiononly", "true"))
-            )));
-
-        [TestMethod]
-        public void t()
+        private static readonly List<IRule> SimpleRuleSet = new List<IRule>()
         {
-            var c = new Parser.ConfigurationData()
+            new Rule("foo") {Name = "firstrule"},
+            new Rule("bar") {Name = "secondrule"}
+        };
+        private static readonly List<IRule> BlackHoleRuleSet = new List<IRule>()
+        {
+            new Rule(".*") {Name = "blackhole"}
+        };
+        private static readonly List<IRule> NamedGroupsRuleSet = new List<IRule>()
+        {
+            new Rule(@"foo_(?<foo>\d+)") {Name = "firstrule"},
+            new Rule(@"bar_(?<bar>\d+)") {Name = "secondrule", ActionOnly = false}
+        };
+        private static readonly List<IRule> FieldCleanerRuleSet = new List<IRule>()
+        {
+            new Rule(@"foo_(?<foo>\d+)") {Name = "firstrule"},
+            new Rule(@"bar_(?<bar>\d+)") {Name = "secondrule"},
+            new Rule(@"xyz_(?<xyz>\d+)") {Name = "thirdrule"},
+            new Rule(@"mr.proper") {Name = "cleanerrule", Clean = "foo,xyz", ActionOnly = true},
+        };
+
+        //[TestMethod]
+        //public void t()
+        //{
+        //    var c = new Parser.ConfigurationData()
+        //    {
+        //        Rules = new List<Rule>()
+        //        {
+        //            new Rule("foo") {Name = "r1"},
+        //            new Rule("bar") {Name = "r2"},
+        //        }
+        //    };
+        //    var xd = new XDocument();
+        //    using (var writer = xd.CreateWriter())
+        //    {
+        //        // write xml into the writer
+        //        var serializer = new XmlSerializer(c.GetType());
+        //        serializer.Serialize(writer, c);
+        //    }
+        //    Console.WriteLine(xd.ToString());
+        //}
+
+        private class MockedConfig : IConfiguration
+        {
+            public MockedConfig(List<IRule> rules)
             {
-                Rules = new List<Rule>()
-                {
-                    new Rule("foo") {Name = "r1"},
-                    new Rule("bar") {Name = "r2"},
-                }
-            };
-            var xd = new XDocument();
-            using (var writer = xd.CreateWriter())
-            {
-                // write xml into the writer
-                var serializer = new XmlSerializer(c.GetType());
-                serializer.Serialize(writer, c);
+                Rules = rules;
             }
-            Console.WriteLine(xd.ToString());
+
+            public string InputFile
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public TransferOptions Transfer
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public List<IRule> Rules { get; private set; }
         }
 
         [TestMethod]
         public void ParserCanLoadRules()
         {
-            var testObject = new Parser(null);
-            Assert.IsNull(testObject.Configuration.Rules, "Ctor must not set any rules.");
-            testObject.LoadRules(SimpleRuleSet);
-            Assert.IsNotNull(testObject.Configuration.Rules, "Rules could not be loaded.");
-            Assert.AreEqual(2, testObject.Configuration.Rules.Count, "Missing rules.");
-            Assert.AreEqual("firstrule", testObject.Configuration.Rules[0].Name);
-            Assert.AreEqual("foo", testObject.Configuration.Rules[0].Pattern);
-            testObject.LoadRules(BlackHoleRuleSet);
-            Assert.IsNotNull(testObject.Configuration.Rules, "Rules could not be loaded.");
-            Assert.AreEqual(1, testObject.Configuration.Rules.Count, "Missing rules.");
-            Assert.AreEqual("blackhole", testObject.Configuration.Rules[0].Name);
-            Assert.AreEqual(".*", testObject.Configuration.Rules[0].Pattern);
+            var testObject = new Parser(null, new MockedConfig(SimpleRuleSet));
+            Assert.IsNotNull(testObject.rules, "Rules could not be loaded.");
+            Assert.AreEqual(2, testObject.rules.Count, "Missing rules.");
+            Assert.AreEqual("firstrule", testObject.rules[0].Name);
+            Assert.AreEqual("foo", testObject.rules[0].Pattern);
+
+            testObject = new Parser(null, new MockedConfig(BlackHoleRuleSet));
+            Assert.IsNotNull(testObject.rules, "Rules could not be loaded.");
+            Assert.AreEqual(1, testObject.rules.Count, "Missing rules.");
+            Assert.AreEqual("blackhole", testObject.rules[0].Name);
+            Assert.AreEqual(".*", testObject.rules[0].Pattern);
         }
 
         [TestMethod]
@@ -109,7 +101,7 @@ namespace lit_utest.ParserTests
                 "bar",
                 "xyz",
             };
-            var testObject = new Parser(new MockedTail(initialLines));
+            var testObject = new Parser(new MockedTail(initialLines), new MockedConfig(BlackHoleRuleSet));
             IDictionary<string, string> testRecord = new ConcurrentDictionary<string, string>();
             var events = 0;
             testObject.Changed += (rec) =>
@@ -117,7 +109,6 @@ namespace lit_utest.ParserTests
                 events += 1;
                 testRecord = rec;
             };
-            testObject.LoadRules(BlackHoleRuleSet);
             testObject.Run();
             Assert.AreEqual(1, events, "Unexpected count of received events.");
             Assert.AreEqual(initialLines.Count(), testRecord.Count, "Unexpected count of received fields.");
@@ -132,13 +123,12 @@ namespace lit_utest.ParserTests
                 "xyz",
             };
             var tail = new MockedTail(initialLines);
-            var testObject = new Parser(tail);
+            var testObject = new Parser(tail, new MockedConfig(NamedGroupsRuleSet));
             IDictionary<string, string> testRecord = new ConcurrentDictionary<string, string>();
             testObject.Changed += (rec) => { testRecord = rec; };
-            testObject.LoadRules(NamedGroupsRuleSet);
             testObject.Run();
             tail.AddLines("bar_1");
-            CheckFields(new Dictionary<string, string>() { {"foo", "1"}, {"bar", "1"}}, testRecord );
+            CheckFields(new Dictionary<string, string>() { { "foo", "1" }, { "bar", "1" } }, testRecord);
         }
 
         [TestMethod]
@@ -150,10 +140,9 @@ namespace lit_utest.ParserTests
                 "xyz",
             };
             var tail = new MockedTail(initialLines);
-            var testObject = new Parser(tail);
+            var testObject = new Parser(tail, new MockedConfig(NamedGroupsRuleSet));
             IDictionary<string, string> testRecord = new ConcurrentDictionary<string, string>();
             testObject.Changed += (rec) => { testRecord = rec; };
-            testObject.LoadRules(NamedGroupsRuleSet);
             testObject.Run();
             tail.AddLines("bar_1");
             tail.AddLines("foo_2");
@@ -170,12 +159,11 @@ namespace lit_utest.ParserTests
                 "xyz_3"
             };
             var tail = new MockedTail(initialLines);
-            var testObject = new Parser(tail);
+            var testObject = new Parser(tail, new MockedConfig(FieldCleanerRuleSet));
             IDictionary<string, string> testRecord = new ConcurrentDictionary<string, string>();
             testObject.Changed += (rec) => { testRecord = rec; };
-            testObject.LoadRules(FieldCleanerRuleSet);
             testObject.Run();
-            CheckFields(new Dictionary<string, string>() { { "foo", "1" }, { "bar", "2" }, {"xyz", "3"} }, testRecord);
+            CheckFields(new Dictionary<string, string>() { { "foo", "1" }, { "bar", "2" }, { "xyz", "3" } }, testRecord);
             tail.AddLines("mr.proper");
             CheckFields(new Dictionary<string, string>() { { "foo", "" }, { "bar", "2" }, { "xyz", "" } }, testRecord);
         }
