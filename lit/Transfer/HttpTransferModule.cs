@@ -23,7 +23,7 @@ namespace lit
 
         public List<string> Prefixes { get; set; }
 
-        public void Init()
+        public HttpTransferModule(IConfiguration configuration)
         {
             if (!HttpListener.IsSupported)
             {

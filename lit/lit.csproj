@@ -81,7 +81,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tail\Tail.cs" />
     <Compile Include="Tail\TailEventArgs.cs" />
-    <Compile Include="Transfer\TransferModuleFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
