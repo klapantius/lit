@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 
 namespace lit
@@ -18,7 +19,7 @@ namespace lit
 
             [XmlArray("rules")]
             [XmlArrayItem("rule")]
-            public List<IRule> Rules;
+            public List<Rule> Rules;
 
         }
 
@@ -28,13 +29,12 @@ namespace lit
 
         public TransferOptions Transfer { get { return configuration.Transfer; } }
 
-        public List<IRule> Rules { get { return configuration.Rules; } }
+        public List<IRule> Rules { get { return configuration.Rules.Select(r => (IRule)r).ToList(); } }
 
         public Configuration(string configFile)
         {
             var serializer = new XmlSerializer(typeof(ConfigurationData));
             configuration = (ConfigurationData)serializer.Deserialize(new FileStream(configFile, FileMode.Open));
-            throw new NotImplementedException();
         }
 
     }

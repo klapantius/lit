@@ -75,7 +75,7 @@ namespace lit
                     {
                         changed = !record.ContainsKey(field.Key) ||
                                   (record.ContainsKey(field.Key) && record[field.Key] != field.Value);
-                        Console.WriteLine("{2} {{([{0}]: \"{1}\"}} to record", field.Key, field.Value, record.ContainsKey(field.Key) ? "changing" : "adding");
+                        //Console.WriteLine("{2} {{([{0}]: \"{1}\"}} to record", field.Key, field.Value, record.ContainsKey(field.Key) ? "changing" : "adding");
                         record[field.Key] = field.Value;
                     }
                     

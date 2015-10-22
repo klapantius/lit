@@ -15,7 +15,7 @@ namespace lit
         public const string ConnectionRequest = "subscribe";
         public const string StatusRequest = "getstatus";
         public const string StatusReport = "status";
-        
+
         private List<string> connections = new List<string>();
         private IDictionary<string, string> myRecord;
 
@@ -32,16 +32,12 @@ namespace lit
 
             // URI prefixes are required, for example 
             // "http://localhost:8080/index/".
-            if (Prefixes == null || Prefixes.Count == 0)
+            if (string.IsNullOrEmpty(configuration.Transfer.Prefix))
             {
-                throw new ArgumentException("Prefixes");
+                throw new ArgumentException("Prefix");
             }
-
-            foreach (var s in Prefixes)
-            {
-                Console.WriteLine("\tusing prefix {0}", s);
-                myListener.Prefixes.Add(s);
-            }
+            Console.WriteLine("\tusing prefix {0}", configuration.Transfer.Prefix);
+            myListener.Prefixes.Add(configuration.Transfer.Prefix);
 
         }
 
@@ -81,7 +77,8 @@ namespace lit
 
         public void ReceiveChanges(IDictionary<string, string> record)
         {
-            throw new NotImplementedException();
+            myRecord = record;
+            Console.WriteLine("myrecord: {0}", RecordAsJson);
         }
 
         public void Stop()
