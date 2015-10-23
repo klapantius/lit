@@ -34,7 +34,10 @@ namespace lit
         public Configuration(string configFile)
         {
             var serializer = new XmlSerializer(typeof(ConfigurationData));
-            configuration = (ConfigurationData)serializer.Deserialize(new FileStream(configFile, FileMode.Open));
+            using (var stream = new FileStream(configFile, FileMode.Open))
+            {
+                configuration = (ConfigurationData)serializer.Deserialize(stream);
+            }
         }
 
     }

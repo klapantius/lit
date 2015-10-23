@@ -78,11 +78,8 @@ namespace lit
         public void ReceiveChanges(IDictionary<string, string> record)
         {
             myRecord = record;
-            Console.WriteLine(string.Join(", ", new List<string>()
-            {
-                record["TimeStamp"],
-                record["Build"], record["Assembly"], record["TC"], record["Status"]
-            }));
+            Console.WriteLine(string.Join(", ",
+                new List<string>() { "TimeStamp", "Build", "Assembly", "TC", "Status" }.Select(f => record.ContainsKey(f) ? record[f] : "")));
         }
 
         public void Stop()
