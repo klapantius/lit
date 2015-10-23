@@ -78,7 +78,11 @@ namespace lit
         public void ReceiveChanges(IDictionary<string, string> record)
         {
             myRecord = record;
-            Console.WriteLine("myrecord: {0}", RecordAsJson);
+            Console.WriteLine(string.Join(", ", new List<string>()
+            {
+                record["TimeStamp"],
+                record["Build"], record["Assembly"], record["TC"], record["Status"]
+            }));
         }
 
         public void Stop()

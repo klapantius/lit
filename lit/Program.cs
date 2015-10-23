@@ -27,7 +27,7 @@ namespace lit
             var configuration=new Configuration(configFile);
             if (!File.Exists(configuration.InputFile))
             {
-                Console.WriteLine("Error: could not find input file \"{0}\"", configFile);
+                Console.WriteLine("Error: could not find input file \"{0}\"", configuration.InputFile);
                 return;
             }
             var tail = new Tail(configuration.InputFile, Encoding.Default);

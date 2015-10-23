@@ -1,13 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <configuration>
-    <file>VSTTAgent.test.log</file>
+    <file>\\EH5DE01T0232PC\d$\AgentTrace\VSTTAgentProcess.log</file>
     <transfer>
         <prefix>http://localhost:7789/</prefix>
     </transfer>
     <rules>
         <rule name="status" pattern="(?&lt;LogType&gt;\w), \d*, (?&lt;JobId&gt;\d*), (?&lt;TimeStamp&gt;\d*/\d*/\d*, \d*:\d*:\d*.\d*), (?&lt;AgentName&gt;[\w\d_]+)\\.*.exe, StateMachine\(AgentState\): calling state handler for (?&lt;Status&gt;.*)" />
+        <rule name="status_online" pattern="(?&lt;LogType&gt;\w), \d*, (?&lt;JobId&gt;\d*), (?&lt;TimeStamp&gt;\d*/\d*/\d*, \d*:\d*:\d*.\d*), (?&lt;AgentName&gt;[\w\d_]+)\\.*.exe, StateMachine\(AgentState\): calling state handler for (?&lt;Status&gt;Online)" clean="Build,Assembly,TC" />
+        <rule name="status_cleanup" pattern="(?&lt;LogType&gt;\w), \d*, (?&lt;JobId&gt;\d*), (?&lt;TimeStamp&gt;\d*/\d*/\d*, \d*:\d*:\d*.\d*), (?&lt;AgentName&gt;[\w\d_]+)\\.*.exe, StateMachine\(AgentState\): calling state handler for (?&lt;Status&gt;CleanupDataCollectors)" clean="TC" />
         <rule name="assembly" pattern="^TestAssemblies=(?&lt;Assembly&gt;[\d\w\._]+)\.dll$" />
-        <rule name="testcase" pattern="HumanReadableId=.(?&lt;TC&gt;.*)., Id=" />
+        <!--<rule name="testcase" pattern="HumanReadableId=.(?&lt;TC&gt;.*)., Id=" />-->
+        <rule name="testcase" pattern="AgentObject: WaitForTestState waiting for test '(?&lt;TC&gt;.*)' Completed" />
         <rule name="buildname" pattern="logDirGuardedExec=.*tfssysint\$\\(?&lt;Build&gt;.*)\\logs" />
     </rules>
 </configuration>

@@ -49,24 +49,7 @@ namespace lit
             foreach (var line in e.NewLines)
             {
                 IRule matching;
-                try
-                {
-                    matching = rules.SingleOrDefault(r => r.IsMatching(line));
-                }
-                catch (InvalidOperationException exception)
-                {
-                    if (exception.Message.Contains("more than one"))
-                    {
-                        var conflictingRules = rules.Where(r => r.IsMatching(line)).Select(r => string.IsNullOrEmpty(r.Name) ? r.Pattern : r.Name);
-                        Console.WriteLine("Rule conflict!!! These rules: {0}{1}{0}are all matching to this line:{0}{2}",
-                            Environment.NewLine, string.Join(Environment.NewLine, conflictingRules), line);
-                    }
-                    else
-                    {
-                        Console.WriteLine("{0} caught (\"{1}\") while tryint to parser line: \"{2}\"", exception.GetType().Name, exception.Message, line);
-                    }
-                    matching = rules.FirstOrDefault(r => r.IsMatching(line));
-                }
+                matching = rules.LastOrDefault(r => r.IsMatching(line));
                 if (null == matching) continue;
                 var lineFields = matching.Parse(line);
                 if (!matching.ActionOnly)
@@ -78,7 +61,7 @@ namespace lit
                         //Console.WriteLine("{2} {{([{0}]: \"{1}\"}} to record", field.Key, field.Value, record.ContainsKey(field.Key) ? "changing" : "adding");
                         record[field.Key] = field.Value;
                     }
-                    
+
                 }
                 if (!string.IsNullOrEmpty(matching.Clean))
                 {
