@@ -10,8 +10,6 @@ namespace lit
 {
     class HttpTransferModule : ITransferModule
     {
-        public const int PORT = 7789;
-
         public const string ConnectionRequest = "subscribe";
         public const string StatusRequest = "getstatus";
         public const string StatusReport = "status";
@@ -36,7 +34,7 @@ namespace lit
             {
                 throw new ArgumentException("Prefix");
             }
-            Console.WriteLine("\tusing prefix {0}", configuration.Transfer.Prefix);
+            Console.WriteLine("using prefix {0}", configuration.Transfer.Prefix);
             myListener.Prefixes.Add(configuration.Transfer.Prefix);
 
         }
