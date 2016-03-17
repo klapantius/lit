@@ -99,7 +99,7 @@ namespace lit
             }
             var request = httpRequest.Url.LocalPath.Trim('/');
             var client = httpRequest.RemoteEndPoint.Address.ToString();
-            //Console.WriteLine("http {0} request received from {1}: {2}", httpRequest.HttpMethod, client, request);
+            Console.WriteLine("http {0} request received from {1}: {2}", httpRequest.HttpMethod, client, request);
             switch (request)
             {
                 case ConnectionRequest:

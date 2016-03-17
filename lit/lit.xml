@@ -2,7 +2,7 @@
 <configuration>
     <file>\\EH5DE01T0156PC\d$\AgentTrace\VSTTAgentProcess.log</file>
     <transfer>
-        <prefix>http://localhost:7789/</prefix>
+        <prefix>http://*:7789/</prefix>
     </transfer>
     <rules>
         <rule name="status" pattern="(?&lt;LogType&gt;\w), \d*, (?&lt;JobId&gt;\d*), (?&lt;TimeStamp&gt;\d*/\d*/\d*, \d*:\d*:\d*.\d*), (?&lt;AgentName&gt;[\w\d_]+)\\.*.exe, StateMachine\(AgentState\): calling state handler for (?&lt;Status&gt;.*)" />
