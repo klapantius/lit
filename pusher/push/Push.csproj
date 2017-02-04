@@ -42,7 +42,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CmdLine.cs" />
+    <Compile Include="FileReader.cs" />
     <Compile Include="FileSystem.cs" />
+    <Compile Include="IFileReader.cs" />
+    <Compile Include="IFileStream.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VersionFileManager.cs" />
